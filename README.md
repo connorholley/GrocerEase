@@ -20,3 +20,4 @@ Architecture:
 
 Goals: 
    Strenghten test writing skills in python, front end development in react native, and general knowledge of the app creation cycle.
+
