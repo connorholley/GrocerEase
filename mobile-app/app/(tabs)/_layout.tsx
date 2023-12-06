@@ -25,7 +25,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Tab One',
+          title: 'Recipe Card',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
           headerRight: () => (
             <Link href="/modal" asChild>
@@ -44,9 +44,9 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="two"
+        name="MyPantryView"
         options={{
-          title: 'Tab Two',
+          title: 'My Pantry',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
         }}
       />
