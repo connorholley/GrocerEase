@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "GrocerEase",
-    "slug": "GrocerEase",
+    "name": "mobile-app",
+    "slug": "mobile-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
