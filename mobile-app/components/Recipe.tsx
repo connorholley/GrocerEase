@@ -1,16 +1,21 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Image, ImageSourcePropType } from 'react-native';
 import Ingredient from './Ingredient';
 
 interface RecipeProps {
-  RecipeName: string;
+  recipeName: string;
   ingredients: Array<{ name: string; amount: string; unit: string }>;
+  imagePath: ImageSourcePropType; // Change the type to ImageSourcePropType
 }
 
-const Recipe: React.FC<RecipeProps> = ({ RecipeName, ingredients }) => {
+const Recipe: React.FC<RecipeProps> = ({ recipeName, ingredients, imagePath }) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Recipe Title: {RecipeName}</Text>
+      <Text style={styles.title}>Recipe of the day: {recipeName}</Text>
+      <Image
+        style={styles.image}
+        source={imagePath}
+      />
       <Text style={styles.subtitle}>Ingredients:</Text>
       <View style={styles.ingredientsList}>
         {ingredients.map((ingredient, index) => (
@@ -24,11 +29,17 @@ const Recipe: React.FC<RecipeProps> = ({ RecipeName, ingredients }) => {
           </View>
         ))}
       </View>
+    
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  image: {
+    width: 200,
+    height: 200,
+    resizeMode: 'cover', 
+  },
   container: {
     margin: 16,
   },

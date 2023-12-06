@@ -40,7 +40,9 @@ const RecipeCardView: React.FC = () => {
 
   const recipeData = {
     // We will get this data from the backend
-    RecipeName: 'Cheesy Nachos',
+    recipeName: 'Cheesy Nachos',
+    
+    imagePath:require('../../assets/images/nachos-example.jpeg'),
     ingredients: [
       { name: 'cheese', amount: '100', unit: 'g' },
       { name: 'chips', amount: '500', unit: 'g' },
@@ -56,7 +58,7 @@ const RecipeCardView: React.FC = () => {
         onValueChange={handleFilterChange}
       />
       <View style={styles.separator} />
-      <Recipe RecipeName={recipeData.RecipeName} ingredients={recipeData.ingredients} />
+      <Recipe recipeName={recipeData.recipeName} ingredients={recipeData.ingredients} imagePath={recipeData.imagePath} />
       <View style={styles.separator} />
     </ScrollView>
   );
