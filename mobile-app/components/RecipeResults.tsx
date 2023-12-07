@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import FilterDropdown from '../../components/FilterDropdown';
-import RecipeResult from '../../components/RecipeResult';
+
+import FilterDropdown from './FilterDropdown';
+import RecipeResult from './RecipeResult';
 const styles = StyleSheet.create({
   container: {
   
@@ -42,7 +43,7 @@ const RecipeResults: React.FC = () => {
   const recipeData = [
     {
       recipeName: 'Cheesy Nachos',
-      imagePath: require('../../assets/images/nachos-example.jpeg'),
+      imagePath: require('../assets/images/nachos-example.jpeg'),
       ingredients: [
         { name: 'cheese', amount: '100', unit: 'g' },
         { name: 'chips', amount: '500', unit: 'g' },
@@ -51,7 +52,7 @@ const RecipeResults: React.FC = () => {
     },
     {
       recipeName: 'Tasty Burger',
-      imagePath: require('../../assets/images/burger.jpeg'),
+      imagePath: require('../assets/images/burger.jpeg'),
       ingredients: [
         { name: 'cheese', amount: '100', unit: 'g' },
         { name: 'ground beef', amount: '1', unit: 'kg' },

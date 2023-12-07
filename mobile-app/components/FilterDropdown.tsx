@@ -37,6 +37,7 @@ const styles = StyleSheet.create({
   label: {
     marginRight: 10,
     fontSize: 16,
+    color:'white'
   },
 });
 
