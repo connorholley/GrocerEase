@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import Recipe from '../../components/Recipe';
+
 import FilterDropdown from '../../components/FilterDropdown';
+import RecipeResult from '../../components/RecipeResult';
 
 const styles = StyleSheet.create({
   container: {
@@ -23,7 +24,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const RecipeCardView: React.FC = () => {
+const RecipeCardsView: React.FC = () => {
   const [selectedFilter, setSelectedFilter] = useState('All');
   const filterOptions = [
     { label: 'All', value: 'all' },
@@ -36,32 +37,53 @@ const RecipeCardView: React.FC = () => {
     setSelectedFilter(value);
     // This will influence which SQL select we undergo
     // For example, favorites would randomly select a recipe marked as a favorite
+    // add how many we are cooking for
   };
 
-  const recipeData = {
-    // We will get this data from the backend
-    recipeName: 'Cheesy Nachos',
-    
-    imagePath:require('../../assets/images/nachos-example.jpeg'),
-    ingredients: [
-      { name: 'cheese', amount: '100', unit: 'g' },
-      { name: 'chips', amount: '500', unit: 'g' },
-    ],
-  };
+  const recipeData = [
+    {
+      recipeName: 'Cheesy Nachos',
+      imagePath: require('../../assets/images/nachos-example.jpeg'),
+      ingredients: [
+        { name: 'cheese', amount: '100', unit: 'g' },
+        { name: 'chips', amount: '500', unit: 'g' },
+      ],
+      recipeDescription:"Delicious chips covered in cheese. Baked to perfection."
+    },
+    {
+      recipeName: 'Tasty Burger',
+      imagePath: require('../../assets/images/burger.jpeg'),
+      ingredients: [
+        { name: 'cheese', amount: '100', unit: 'g' },
+        { name: 'ground beef', amount: '1', unit: 'kg' },
+      ],
+      recipeDescription:"Damn that is a tasty Burger!"
+    },
+  ];
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Recipe Generator</Text>
-      <FilterDropdown
-        options={filterOptions}
-        selectedValue={selectedFilter}
-        onValueChange={handleFilterChange}
-      />
+      <Text style={styles.title}>
+        <FilterDropdown
+          options={filterOptions}
+          selectedValue={selectedFilter}
+          onValueChange={handleFilterChange}
+        />
+      </Text>
       <View style={styles.separator} />
-      <Recipe recipeName={recipeData.recipeName} ingredients={recipeData.ingredients} imagePath={recipeData.imagePath} />
-      <View style={styles.separator} />
+      {recipeData.map((recipe, index) => (
+        <View key={index}>
+          <RecipeResult
+            recipeName={recipe.recipeName}
+            ingredients={recipe.ingredients}
+            imagePath={recipe.imagePath}
+            recipeDescription={recipe.recipeDescription}
+          />
+          <View style={styles.separator} />
+        </View>
+      ))}
     </ScrollView>
   );
 };
 
-export default RecipeCardView;
+export default RecipeCardsView;

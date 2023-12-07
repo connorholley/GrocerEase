@@ -16,7 +16,7 @@ const FilterDropdown: React.FC<FilterDropdownProps> = ({
 }) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.label}>Filter:</Text>
+      <Text style={styles.label}>Recipe Generator Filter:</Text>
       <RNPickerSelect
         items={options}
         onValueChange={onValueChange}
@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 10,
+    marginVertical: 0,
   },
   label: {
     marginRight: 10,
@@ -51,6 +51,7 @@ const pickerSelectStyles = StyleSheet.create({
     color: 'black',
     paddingRight: 30,
     backgroundColor: 'white',
+    marginTop: 2, // Adjust this value to align the center points
   },
   inputAndroid: {
     fontSize: 16,
@@ -62,6 +63,7 @@ const pickerSelectStyles = StyleSheet.create({
     color: 'black',
     paddingRight: 30,
     backgroundColor: 'white',
+    marginTop: 2, // Adjust this value to align the center points
   },
 });
 
