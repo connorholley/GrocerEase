@@ -15,12 +15,18 @@ const RecipeResult: React.FC<RecipeProps> = ({ recipeName, ingredients, imagePat
 
   const handleRecipeClick = () => {
     // Pass each parameter separately
-    // navigation.navigate('RecipeCard', {
-    //   recipeName,
-    //   ingredients,
-    //   imagePath,
-    //   recipeDescription,
-    // });
+    console.log('Navigating to RecipeCard with data:', {
+      recipeName,
+      ingredients,
+      imagePath,
+      recipeDescription,
+    });
+    navigation.navigate('RecipeCard', {
+      recipeName,
+      ingredients,
+      imagePath,
+      recipeDescription,
+    });
     // navigation.navigate('RecipeCard',{});
   };
   
