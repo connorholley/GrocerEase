@@ -1,14 +1,25 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import Ingredient from './Ingredient';
+import { useNavigation } from '@react-navigation/native';
+import { AntDesign } from '@expo/vector-icons';
 const RecipeCard = ({ route }) => {
   const { recipeName, ingredients, imagePath, recipeDescription } = route.params;
-  
+  const navigation = useNavigation();
+
+  const handleGoBack = () => {
+    // Pass each parameter separately
+
+    navigation.goBack();
+    // navigation.navigate('RecipeCard',{});
+  };
   return (
     <View style={styles.outerContainer}>
-       
+  
   <View style={styles.container}>
-   
+  <TouchableOpacity onPress={handleGoBack} style={styles.goBackClick} >
+  <AntDesign name="back" size={24} color="white" />
+      </TouchableOpacity>
      <Text style={styles.title}> {recipeName}</Text>
       <Image style={styles.image} source={imagePath} />
       <Text style={styles.subtitle}>Description:</Text>
@@ -84,6 +95,14 @@ const styles = StyleSheet.create({
   bullet: {
     marginRight: 8,
     fontSize: 16,
+  },
+  goBackClick: {
+    position: 'absolute',
+    top: 10,
+    left: 20,
+    borderRadius:20,
+    backgroundColor:'#2455C2',
+    padding:4
   },
   
 });
