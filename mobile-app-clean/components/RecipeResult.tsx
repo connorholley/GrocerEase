@@ -7,7 +7,7 @@ interface RecipeProps {
   recipeName: string;
   recipeDescription: string;
   ingredients: Array<{ name: string; amount: string; unit: string }>;
-  imagePath: ImageSourcePropType; // Change the type to ImageSourcePropType
+  imagePath: ImageSourcePropType; 
 }
 
 const RecipeResult: React.FC<RecipeProps> = ({ recipeName, ingredients, imagePath, recipeDescription }) => {
