@@ -1,0 +1,10 @@
+{
+    
+    "development": {
+      "db_uri": "sqlite:///development.db"
+    },
+    "testing": {
+      "db_uri": "sqlite:///test.db"
+    }
+  }
+  

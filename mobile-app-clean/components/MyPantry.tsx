@@ -13,7 +13,7 @@ const MyPantry: React.FC<MyPantryProps> = ({}) => {
     const [listData, setListData] = useState<Ingredient[]>([
         { id: '1', name: 'Item 1', amount: '', unit: '' },
        
-        // Add more initial items as needed
+       
       ]);
     
       const handleItemChange = (id: string, field: string, text: string) => {
