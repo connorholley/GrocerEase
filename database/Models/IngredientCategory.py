@@ -1,6 +1,6 @@
 
 from sqlalchemy import Column, Integer, String
-from sqlalchemy.orm import relationship, declarative_base, Session
+from sqlalchemy.orm import relationship, declarative_base
 from Relationships import IngredientCategoryIngredient
 
 

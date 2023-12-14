@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine, Column, Integer, String, Text, ARRAY
-from sqlalchemy.orm import relationship, declarative_base, Session
-from Ingredient import Ingredient
+from sqlalchemy.orm import relationship, declarative_base
+
 from Relationships import UserRecipe, RecipeIngredient
 
 Base = declarative_base()
