@@ -5,7 +5,7 @@ from Relationships import RecipeIngredient, IngredientCategoryIngredient
 Base = declarative_base()
 
 class Ingredient(Base):
-    __tablename__ = 'ingredient'
+    __tablename__ = 'ingredients'
 
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)

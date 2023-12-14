@@ -5,40 +5,29 @@ LOCAL_TEST_DB='testing-db'  # Testing DB
 LOCAL_PROD_DB='production-db'  # Production DB
 
 # Main Targets
-all: setup-testing setup-production
+all: setup
 
-# Download the postgres Docker image and create the testing container.
-setup-testing:
+# Download the postgres Docker image and create the container with both databases.
+setup:
 	docker run -d \
-		--name grocer-ease-psql-testing \
+		--name grocer-ease-psql \
 		-p 5455:5432 \
 		-e POSTGRES_USER='bert' \
 		-e POSTGRES_PASSWORD='guest' \
-		-e POSTGRES_DB='testing-db' \
+		-e POSTGRES_DB='testing-db,production-db' \
 		postgres
 
-# Download the postgres Docker image and create the production container.
-setup-production:
-	docker run -d \
-		--name grocer-ease-psql-production \
-		-p 5456:5432 \
-		-e POSTGRES_USER='bert' \
-		-e POSTGRES_PASSWORD='guest' \
-		-e POSTGRES_DB='production-db' \
-		postgres
+	# Sleep to allow PostgreSQL to start
+	sleep 5
 
-# Stop the testing container
-down-testing:
-	docker stop grocer-ease-psql-testing
+	# Create testing and production databases
+	docker exec -i grocer-ease-psql createdb -U bert testing-db
+	docker exec -i grocer-ease-psql createdb -U bert production-db
 
-# Stop the production container
-down-production:
-	docker stop grocer-ease-psql-production
+# Stop the container
+down:
+	docker stop grocer-ease-psql
 
-# Remove the testing container
-remove-testing:
-	docker rm grocer-ease-psql-testing
-
-# Remove the production container
-remove-production:
-	docker rm grocer-ease-psql-production
+# Remove the container
+remove:
+	docker rm grocer-ease-psql

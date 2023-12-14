@@ -6,7 +6,7 @@ from sqlalchemy.orm import declarative_base
 Base = declarative_base()
 
 class PantryItem(Base):
-    __tablename__ = 'pantry_item'
+    __tablename__ = 'pantry_items'
 
     id = Column(Integer, primary_key=True)
     ingredient_id = Column(Integer, ForeignKey('ingredient.id'), nullable=False)

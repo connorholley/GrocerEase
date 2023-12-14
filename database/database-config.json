@@ -1,10 +1,8 @@
 {
-    
-    "production": {
-      "db_uri": "postgresql://bert:guest@localhost:5456/production-db"
-    },
-    "testing": {
+  "production": {
+      "db_uri": "postgresql://bert:guest@localhost:5455/production-db"
+  },
+  "testing": {
       "db_uri": "postgresql://bert:guest@localhost:5455/testing-db"
-    }
   }
-  
+}
