@@ -30,7 +30,7 @@ class PantryItemController:
         self.Session = sessionmaker(bind=self.engine)
 
     def load_config(self, environment):
-        with open('config.json', 'r') as config_file:
+        with open('database-config.json', 'r') as config_file:
             config_data = json.load(config_file)
             return config_data.get(environment, {})
 
