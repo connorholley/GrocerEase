@@ -1,7 +1,7 @@
 import json
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from Models import Recipe, Ingredient, RecipeIngredient, UserRecipe
+from Models import Recipe
 
 class RecipeController:
     '''

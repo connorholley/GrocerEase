@@ -1,7 +1,7 @@
 import json
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from Models import User
+from Models.User import User
 
 class UserController:
     '''
@@ -22,9 +22,10 @@ class UserController:
     '''
 
     def __init__(self, environment='testing'):
+        print ("Hello test")
         self.config = self.load_config(environment)
+      
         self.engine = create_engine(self.config['db_uri'])
-        User.metadata.create_all(self.engine)
         self.Session = sessionmaker(bind=self.engine)
 
     def load_config(self, environment):
@@ -34,9 +35,9 @@ class UserController:
 
   
 
-    def insert_user(self, name, age):
+    def insert_user(self, name):
             session = self.Session()
-            user = User(name=name, age=age)
+            user = User(name=name)
             session.add(user)
             session.commit()
             session.close()
@@ -63,3 +64,9 @@ class UserController:
         if user:
             return user.recipes
         return []
+
+
+if __name__ == "__main__":
+    # Create an instance of UserController
+    user_controller = UserController()
+    user_controller.insert_user("connor Holley")

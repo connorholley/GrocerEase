@@ -9,7 +9,8 @@ CREATE TABLE ingredient_categories (
 );
 
 CREATE TABLE users (
-    id SERIAL PRIMARY KEY
+    id SERIAL PRIMARY KEY,
+    name TEXT
 );
 
 CREATE TYPE UNIT_TYPE AS ENUM (
