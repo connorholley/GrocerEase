@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # SQL script file
-SQL_SCRIPT="rollback.sql"
+SQL_SCRIPT="apply.sql"
 
 # List of databases
-DATABASES=("testing-db" "production-db")
+DATABASES=("testing-db")
 
 # PostgreSQL connection parameters
 PG_USER="bert"

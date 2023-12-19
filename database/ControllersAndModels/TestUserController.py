@@ -1,4 +1,6 @@
 import unittest
+import os
+import subprocess
 from unittest.mock import MagicMock
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -8,15 +10,9 @@ from UserController import UserController
 class TestUserController(unittest.TestCase):
 
     def setUp(self):
-
+        self.drop_and_create_test_tables()
         self.controller = UserController(environment='testing')
         self.session= self.controller.Session()
-    def tearDown(self):
-        # Delete data in table after each test
-        self.session.query(User).delete()
-        self.session.query(Recipe).delete()
-        self.session.commit()
-       
 
     def test_insert_user(self):
         # Test inserting a user with a recipe
@@ -26,9 +22,10 @@ class TestUserController(unittest.TestCase):
         # Check if the user and recipe were added to the database
         with self.session as session:
             user = session.query(User).filter_by(name='Test User').first()
-            print(user.recipes[0])
+           
             self.assertIsNotNone(user)
-            self.assertEqual(user.recipes, [recipe])
+            self.assertEqual(user.recipes[0].id, 1)
+            self.assertEqual(user.recipes[0].name, 'Test Recipe')
 
     def test_delete_user(self):
         # Test deleting a user
@@ -43,6 +40,31 @@ class TestUserController(unittest.TestCase):
             # Check if the user was deleted from the database
             deleted_user = session.query(User).filter_by(id=user.id).first()
             self.assertIsNone(deleted_user)
+    
+    def run_shell_script(self, script_path):
+        script_dir = os.path.dirname(os.path.abspath(script_path))
+
+        try:
+            subprocess.run(["sh", script_path], check=True, cwd=script_dir)
+        except subprocess.CalledProcessError as e:
+            print(f"Error running {script_path} script: {e}")
+
+            
+    def drop_and_create_test_tables(self):
+        drop_tables_script_path = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        "..", "..",  # Adjust the relative path based on your project structure
+        "database/migrations/v0.0.1/tear-down-test-db.sh"
+    )   
+       
+        create_tables_script_path = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        "..", "..",  # Adjust the relative path based on your project structure
+        "database/migrations/v0.0.1/set-up-test-db.sh"
+    )
+        self.run_shell_script(drop_tables_script_path)
+        self.run_shell_script(create_tables_script_path)
+       
 
     # def test_update_user(self):
     #     # Test updating a user's name and adding a recipe
