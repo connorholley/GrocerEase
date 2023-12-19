@@ -25,42 +25,42 @@ class IngredientCategoryController:
     ingredient_category_controller.delete_ingredient_category(category_id=1)
     '''
 
-    def __init__(self, environment='testing'):
-        self.config = self.load_config(environment)
-        self.engine = create_engine(self.config['db_uri'])
-        IngredientCategory.metadata.create_all(self.engine)
-        self.Session = sessionmaker(bind=self.engine)
+    # def __init__(self, environment='testing'):
+    #     self.config = self.load_config(environment)
+    #     self.engine = create_engine(self.config['db_uri'])
+    #     IngredientCategory.metadata.create_all(self.engine)
+    #     self.Session = sessionmaker(bind=self.engine)
 
-    def load_config(self, environment):
-        with open('database-config.json', 'r') as config_file:
-            config_data = json.load(config_file)
-            return config_data.get(environment, {})
+    # def load_config(self, environment):
+    #     with open('database-config.json', 'r') as config_file:
+    #         config_data = json.load(config_file)
+    #         return config_data.get(environment, {})
 
-    def insert_ingredient_category(self, name):
-        session = self.Session()
-        category = IngredientCategory(name=name)
-        session.add(category)
-        session.commit()
-        session.close()
+    # def insert_ingredient_category(self, name):
+    #     session = self.Session()
+    #     category = IngredientCategory(name=name)
+    #     session.add(category)
+    #     session.commit()
+    #     session.close()
 
-    def get_all_ingredient_categories(self):
-        session = self.Session()
-        categories = session.query(IngredientCategory).all()
-        session.close()
-        return categories
+    # def get_all_ingredient_categories(self):
+    #     session = self.Session()
+    #     categories = session.query(IngredientCategory).all()
+    #     session.close()
+    #     return categories
 
-    def delete_ingredient_category(self, category_id):
-        session = self.Session()
-        category = session.query(IngredientCategory).get(category_id)
-        if category:
-            session.delete(category)
-            session.commit()
-        session.close()
+    # def delete_ingredient_category(self, category_id):
+    #     session = self.Session()
+    #     category = session.query(IngredientCategory).get(category_id)
+    #     if category:
+    #         session.delete(category)
+    #         session.commit()
+    #     session.close()
 
-    def update_ingredient_category(self, category_id, new_name):
-        session = self.Session()
-        category = session.query(IngredientCategory).get(category_id)
-        if category:
-            category.name = new_name
-            session.commit()
-        session.close()
+    # def update_ingredient_category(self, category_id, new_name):
+    #     session = self.Session()
+    #     category = session.query(IngredientCategory).get(category_id)
+    #     if category:
+    #         category.name = new_name
+    #         session.commit()
+    #     session.close()

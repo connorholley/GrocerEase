@@ -24,43 +24,43 @@ class IngredientController:
     ingredient_controller.delete_ingredient(ingredient_id=1)
     '''
 
-    def __init__(self, environment='testing'):
-        self.config = self.load_config(environment)
-        self.engine = create_engine(self.config['db_uri'])
-        Ingredient.metadata.create_all(self.engine)
-        self.Session = sessionmaker(bind=self.engine)
+    # def __init__(self, environment='testing'):
+    #     self.config = self.load_config(environment)
+    #     self.engine = create_engine(self.config['db_uri'])
+    #     Ingredient.metadata.create_all(self.engine)
+    #     self.Session = sessionmaker(bind=self.engine)
 
-    def load_config(self, environment):
-        with open('database-config.json', 'r') as config_file:
-            config_data = json.load(config_file)
-            return config_data.get(environment, {})
+    # def load_config(self, environment):
+    #     with open('database-config.json', 'r') as config_file:
+    #         config_data = json.load(config_file)
+    #         return config_data.get(environment, {})
 
-    def insert_ingredient(self, name):
-        session = self.Session()
-        ingredient = Ingredient(name=name)
-        session.add(ingredient)
-        session.commit()
-        session.close()
+    # def insert_ingredient(self, name):
+    #     session = self.Session()
+    #     ingredient = Ingredient(name=name)
+    #     session.add(ingredient)
+    #     session.commit()
+    #     session.close()
 
-    def get_all_ingredients(self):
-        session = self.Session()
-        ingredients = session.query(Ingredient).all()
-        session.close()
-        return ingredients
+    # def get_all_ingredients(self):
+    #     session = self.Session()
+    #     ingredients = session.query(Ingredient).all()
+    #     session.close()
+    #     return ingredients
 
-    def delete_ingredient(self, ingredient_id):
-        session = self.Session()
-        ingredient = session.query(Ingredient).get(ingredient_id)
-        if ingredient:
-            session.delete(ingredient)
-            session.commit()
-        session.close()
+    # def delete_ingredient(self, ingredient_id):
+    #     session = self.Session()
+    #     ingredient = session.query(Ingredient).get(ingredient_id)
+    #     if ingredient:
+    #         session.delete(ingredient)
+    #         session.commit()
+    #     session.close()
 
-    def update_ingredient(self, ingredient_id, new_name):
-        session = self.Session()
-        ingredient = session.query(Ingredient).get(ingredient_id)
-        if ingredient:
-            ingredient.name = new_name
-            session.commit()
-        session.close()
+    # def update_ingredient(self, ingredient_id, new_name):
+    #     session = self.Session()
+    #     ingredient = session.query(Ingredient).get(ingredient_id)
+    #     if ingredient:
+    #         ingredient.name = new_name
+    #         session.commit()
+    #     session.close()
 
