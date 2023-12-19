@@ -1,0 +1,3 @@
+db_user="ernie"
+db_password_key="DB_PASSWORD"
+db_database="grocer-ease-psql"

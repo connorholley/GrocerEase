@@ -1,0 +1,4 @@
+db_host="localhost:5432"
+db_user="bert"
+db_password_key="DB_PASSWORD"
+db_database="grocer-ease-psql"
