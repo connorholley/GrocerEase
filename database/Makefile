@@ -28,6 +28,9 @@ setup:
 down:
 	docker stop grocer-ease-psql
 
+up:
+	docker start grocer-ease-psql
+
 # Remove the container
 remove:
 	docker rm grocer-ease-psql

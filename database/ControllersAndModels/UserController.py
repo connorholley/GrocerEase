@@ -4,27 +4,10 @@ from sqlalchemy.orm import sessionmaker
 from Models import User, Recipe
 
 class UserController:
-    '''
-    Example usage:
-    user_controller = UserController(environment='testing')
-
-    # Get user recipes
-    user_recipes = user_controller.get_user_recipes(user_id=1)
-
-    # Insert a user
-    user_controller.insert_user(name='John Doe', age=30)
-
-    # Update user information (assuming the ID is 1)
-    user_controller.update_user(user_id=1, new_name='New Name')
-
-    # Delete a user (assuming the ID is 1)
-    user_controller.delete_user(user_id=1)
-    '''
 
     def __init__(self, environment='testing'):
-        print ("Hello test")
+
         self.config = self.load_config(environment)
-      
         self.engine = create_engine(self.config['db_uri'])
         self.Session = sessionmaker(bind=self.engine)
 
@@ -39,9 +22,8 @@ class UserController:
         session = self.Session()
         user = User(name=name)
 
-        # If a recipe is provided, set it for the user
-        if recipe:
-            user.recipes.append(recipe)
+      
+        self.add_recipe(recipe, session, user)
 
         session.add(user)
         session.commit()
@@ -66,14 +48,23 @@ class UserController:
                 user.name = new_name
 
             # Update the recipe if new_recipe is provided and is an instance of Recipe
-            if new_recipe is not None and isinstance(new_recipe, Recipe):
-                user.recipes = [new_recipe]
-                session.commit()
-            elif new_recipe is not None:
-                # Raise an exception if new_recipe is not an instance of Recipe
-                raise ValueError("new_recipe must be an instance of Recipe")
+            self.add_recipe(new_recipe, session, user)
 
         session.close()
+
+    def add_recipe(self, new_recipe, session, user):
+        if new_recipe is not None and isinstance(new_recipe, Recipe):
+            if user.recipes:
+                    # If user.recipes already has elements, add new_recipe to the existing list
+                user.recipes.append(new_recipe)
+            else:
+                    # If user.recipes is empty, create a new list with new_recipe
+                user.recipes = [new_recipe]
+            session.commit()
+
+        elif new_recipe is not None:
+                # Raise an exception if new_recipe is not an instance of Recipe
+            raise ValueError("new_recipe must be an instance of Recipe")
 
 
     def show_all_users(self, ):
