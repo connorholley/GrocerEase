@@ -10,36 +10,92 @@ from UserController import UserController
 class TestUserController(unittest.TestCase):
 
     def setUp(self):
+        #drops existing tables and creates new ones in the test db
         self.drop_and_create_test_tables()
+
+        #instantiates a controller and a session/connection to db
         self.controller = UserController(environment='testing')
         self.session= self.controller.Session()
 
-    def test_insert_user(self):
-        # Test inserting a user with a recipe
+    def test_insert_user_succeeds(self):
+        #Given we insert a user with name Test User
+        self.controller.insert_user(name='Test User')
+
+        with self.session as session:
+            #When we look to validate the users presence
+            user = session.query(User).filter_by(name='Test User').first()
+
+            #Then the user Is populated with the correct name and id
+            self.assertIsNotNone(user)
+            self.assertEqual(user.id, 1)
+            self.assertEqual(user.name, 'Test User')
+
+    def test_insert_user_succeeds_when_recipe_is_associated(self):
+        #Given we create a recipe and associate it with a user
         recipe = Recipe(name='Test Recipe')
         self.controller.insert_user(name='Test User', recipe=recipe)
 
-        # Check if the user and recipe were added to the database
+       
         with self.session as session:
+            #when we look to validate the users presence
             user = session.query(User).filter_by(name='Test User').first()
-           
+            recipe = session.query(Recipe).filter_by(name='Test Recipe').first()
+
+            #then the user exists and is associated with the right recipe
             self.assertIsNotNone(user)
             self.assertEqual(user.recipes[0].id, 1)
             self.assertEqual(user.recipes[0].name, 'Test Recipe')
 
-    def test_delete_user(self):
-        # Test deleting a user
+            #and the recipe is associated with the right user
+            self.assertIsNotNone(recipe)
+            self.assertEqual(recipe.users[0].id, 1)
+            self.assertEqual(recipe.users[0].name, 'Test User')
+
+
+
+
+    def test_delete_user_succeeds(self):
+       
         with self.session as session:
+            # Given we create a user
             user = User(name='Test User')
             session.add(user)
             session.commit()
 
-            # Call delete_user method
+            user_to_delete = session.query(User).filter_by(id=user.id).first()
+            self.assertIsNotNone(user_to_delete)
+
+            # when we call the delete method
             self.controller.delete_user(user.id)
 
-            # Check if the user was deleted from the database
+            # Then the user is deleted
             deleted_user = session.query(User).filter_by(id=user.id).first()
             self.assertIsNone(deleted_user)
+
+
+    def test_delete_user_succeeds_in_deleting_associated_users_from_recipe(self):
+       
+        with self.session as session:
+            # Given we create a user and associate a recipe to it
+            recipe = Recipe(name='Test Recipe')
+            user = User(name='Test User', recipes=[recipe])
+            session.add(user)
+            session.commit()
+
+            user_to_delete = session.query(User).filter_by(id=user.id).first()
+            self.assertIsNotNone(user_to_delete)
+            self.assertEqual(user.recipes[0].id, 1)
+            self.assertEqual(user.recipes[0].name, 'Test Recipe')
+
+            # When we call the delete method
+            self.controller.delete_user(user.id)
+
+            # Then the user is deleted from the db 
+            deleted_user = session.query(User).filter_by(id=user.id).first()
+            self.assertIsNone(deleted_user)
+
+            #and the recipe is no longer associated with the user
+            self.assertNotEqual(recipe.users,[user])
     
     def run_shell_script(self, script_path):
         script_dir = os.path.dirname(os.path.abspath(script_path))
@@ -49,21 +105,16 @@ class TestUserController(unittest.TestCase):
         except subprocess.CalledProcessError as e:
             print(f"Error running {script_path} script: {e}")
 
-            
+
     def drop_and_create_test_tables(self):
         drop_tables_script_path = os.path.join(
         os.path.dirname(os.path.abspath(__file__)),
         "..", "..",  # Adjust the relative path based on your project structure
-        "database/migrations/v0.0.1/tear-down-test-db.sh"
-    )   
+        "database/migrations/v0.0.1/drop-tables-and-set-up.sh"
+    ) 
+        self.run_shell_script(drop_tables_script_path)  
        
-        create_tables_script_path = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)),
-        "..", "..",  # Adjust the relative path based on your project structure
-        "database/migrations/v0.0.1/set-up-test-db.sh"
-    )
-        self.run_shell_script(drop_tables_script_path)
-        self.run_shell_script(create_tables_script_path)
+
        
 
     # def test_update_user(self):
