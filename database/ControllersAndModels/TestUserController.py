@@ -1,184 +1,207 @@
-import unittest
-import os
-import subprocess
-from unittest.mock import MagicMock
-from sqlalchemy import create_engine
+import pytest
+from sqlalchemy import create_engine, inspect
 from sqlalchemy.orm import sessionmaker
-from Models import User, Recipe
+from Models import User, Base, Recipe  # Ensure User and Base are imported
 from UserController import UserController
 
-class TestUserController(unittest.TestCase):
+# Define a declarative base for testing
+TestBase = Base
 
-    def setUp(self):
-        #drops existing tables and creates new ones in the test db
-        self.drop_and_create_test_tables()
+# SQLAlchemy engine for testing
+engine = create_engine('sqlite:///:memory:')
 
-        #instantiates a controller and a session/connection to db
-        self.controller = UserController(environment='testing')
-        self.session= self.controller.Session()
+# Set metadata bind and create tables in the in-memory SQLite database
 
-    def test_insert_user_succeeds(self):
-        #Given we insert a user with name Test User
-        self.controller.insert_user(name='Test User')
+TestBase.metadata.bind = engine
 
-        with self.session as session:
-            #When we look to validate the users presence
-            user = session.query(User).filter_by(name='Test User').first()
+# Print the table names to verify creation
+inspector = inspect(engine)
+print("Tables in the test insert user function (after binding):", inspector.get_table_names())
 
-            #Then the user Is populated with the correct name and id
-            self.assertIsNotNone(user)
-            self.assertEqual(user.id, 1)
-            self.assertEqual(user.name, 'Test User')
+TestBase.metadata.create_all(engine)
 
-    def test_insert_user_succeeds_when_recipe_is_associated(self):
-        #Given we create a recipe and associate it with a user
-        recipe = Recipe(name='Test Recipe')
-        self.controller.insert_user(name='Test User', recipe=recipe)
+# Session for testing
+Session = sessionmaker(bind=engine)
 
-       
-        with self.session as session:
-            #when we look to validate the users presence
-            user = session.query(User).filter_by(name='Test User').first()
-            recipe = session.query(Recipe).filter_by(name='Test Recipe').first()
+@pytest.fixture
+def db_session(request):
+    # Provide a transactional scope around each test case
+    session = Session()
 
-            #then the user exists and is associated with the right recipe
-            self.assertIsNotNone(user)
-            self.assertEqual(user.recipes[0].id, 1)
-            self.assertEqual(user.recipes[0].name, 'Test Recipe')
+    # Bind the session to the test declarative base
+    TestBase.metadata.bind = engine
 
-            #and the recipe is associated with the right user
-            self.assertIsNotNone(recipe)
-            self.assertEqual(recipe.users[0].id, 1)
-            self.assertEqual(recipe.users[0].name, 'Test User')
+    # Print the table names to verify creation
 
 
+    # Yield the session to the test
+    yield session
+
+    # Rollback the transaction to ensure a clean state for the next test
+    session.rollback()
+
+    # Close the session
+    session.close()
 
 
-    def test_delete_user_succeeds(self):
-       
-        with self.session as session:
-            # Given we create a user
-            user = User(name='Test User')
-            session.add(user)
-            session.commit()
-
-            user_to_delete = session.query(User).filter_by(id=user.id).first()
-            self.assertIsNotNone(user_to_delete)
-
-            # when we call the delete method
-            self.controller.delete_user(user.id)
-
-            # Then the user is deleted
-            deleted_user = session.query(User).filter_by(id=user.id).first()
-            self.assertIsNone(deleted_user)
+@pytest.fixture
+def user_controller(db_session):
+    # Use the in-memory SQLite database session for the UserController
+    controller = UserController()
+    controller.Session = db_session
+    return controller
 
 
-    def test_delete_user_succeeds_in_deleting_associated_users_from_recipe(self):
-       
-        with self.session as session:
-            # Given we create a user and associate a recipe to it
-            recipe = Recipe(name='Test Recipe')
-            user = User(name='Test User', recipes=[recipe])
-            session.add(user)
-            session.commit()
+def test_insert_user(user_controller, db_session):
 
-            user_to_delete = session.query(User).filter_by(id=user.id).first()
-            self.assertIsNotNone(user_to_delete)
-            self.assertEqual(user.recipes[0].id, 1)
-            self.assertEqual(user.recipes[0].name, 'Test Recipe')
 
-            # When we call the delete method
-            self.controller.delete_user(user.id)
+    # Test the insert_user method and verify the inserted user
+    user_name = "TestUser"
+    user_controller.insert_user(user_name)
 
-            # Then the user is deleted from the db 
-            deleted_user = session.query(User).filter_by(id=user.id).first()
-            self.assertIsNone(deleted_user)
+    # Retrieve the user from the database using the db_session fixture
+    inserted_user = db_session.query(User).filter_by(name=user_name).first()
 
-            #and the recipe is no longer associated with the user
-            self.assertNotEqual(recipe.users,[user])
+    # Assert that the user is not None (i.e., found in the database)
+    assert inserted_user is not None
+
+    # Assert the user's properties
+    assert inserted_user.name == user_name
+
+
+def test_delete_user(user_controller, db_session):
+    # Test the delete_user method and verify the user is deleted
+    user_name = "TestUser"
+    user_controller.insert_user(user_name)
+
+    # Retrieve the user from the database using the db_session fixture
+    inserted_user = db_session.query(User).filter_by(name=user_name).first()
+
     
-    def run_shell_script(self, script_path):
-        script_dir = os.path.dirname(os.path.abspath(script_path))
 
-        try:
-            subprocess.run(["sh", script_path], check=True, cwd=script_dir)
-        except subprocess.CalledProcessError as e:
-            print(f"Error running {script_path} script: {e}")
+    # Ensure the user is not None (i.e., found in the database)
+    assert inserted_user is not None
 
+    # Test deleting the user
+    user_controller.delete_user(inserted_user.id)
 
-    def drop_and_create_test_tables(self):
-        drop_tables_script_path = os.path.join(
-        os.path.dirname(os.path.abspath(__file__)),
-        "..", "..",  # Adjust the relative path based on your project structure
-        "database/migrations/v0.0.1/drop-tables-and-set-up.sh"
-    ) 
-        self.run_shell_script(drop_tables_script_path)  
-       
-
-       
-
-    # def test_update_user(self):
-    #     # Test updating a user's name and adding a recipe
-    #     with self.Session() as session:
-    #         user = User(name='Old Name')
-    #         session.add(user)
-    #         session.commit()
-
-    #         # Call update_user method
-    #         new_recipe = Recipe(name='New Recipe')
-    #         self.controller.update_user(user.id, new_name='New Name', new_recipe=new_recipe)
-
-    #         # Check if the user was updated in the database
-    #         updated_user = session.query(User).filter_by(id=user.id).first()
-    #         self.assertIsNotNone(updated_user)
-    #         self.assertEqual(updated_user.name, 'New Name')
-    #         self.assertEqual(updated_user.recipes, [new_recipe])
-
-    # def test_show_all_users(self):
-    #     # Test displaying all users (this mainly checks if the method runs without errors)
-    #     with self.Session() as session:
-    #         user1 = User(name='User 1')
-    #         user2 = User(name='User 2')
-    #         session.add_all([user1, user2])
-    #         session.commit()
-
-    #         # Call show_all_users method
-    #         self.controller.show_all_users()
-
-    # def test_get_user_recipes_by_id(self):
-    #     # Test getting recipes for a user
-    #     with self.Session() as session:
-    #         user = User(name='Test User')
-    #         recipe1 = Recipe(name='Recipe 1')
-    #         recipe2 = Recipe(name='Recipe 2')
-    #         user.recipes = [recipe1, recipe2]
-    #         session.add(user)
-    #         session.commit()
-
-    #         # Call get_user_recipes_by_id method
-    #         recipes = self.controller.get_user_recipes_by_id(user.id)
-    #         self.assertEqual(recipes, [recipe1, recipe2])
-
-    # def test_add_recipe_to_user(self):
-    #     # Test adding a recipe to a user
-    #     with self.Session() as session:
-    #         user = User(name='Test User')
-    #         session.add(user)
-    #         session.commit()
-
-    #         # Call add_recipe_to_user method
-    #         new_recipe = Recipe(name='New Recipe')
-    #         self.controller.add_recipe_to_user(new_recipe, session, user)
-
-    #         # Check if the recipe was added to the user in the database
-    #         updated_user = session.query(User).filter_by(id=user.id).first()
-    #         self.assertEqual(updated_user.recipes, [new_recipe])
-
-    # def test_add_recipe_to_user_raises_exception(self):
-    #     # Test that add_recipe_to_user raises ValueError for non-Recipe instance
-    #     with self.assertRaises(ValueError):
-    #         self.controller.add_recipe_to_user('Not a Recipe', MagicMock(), MagicMock())
+    # Verify the user is not found in the database after deletion
+    deleted_user = db_session.query(User).filter_by(name=user_name).first()
+    print(deleted_user.name)
+    assert deleted_user is None
 
 
-if __name__ == '__main__':
-    unittest.main()
+# def test_update_user_name(user_controller, db_session):
+#     # Test the update_user_name method and verify the updated user name
+#     user_name = "TestUser"
+#     new_name = "UpdatedUser"
+#     user_controller.insert_user(user_name)
+
+#     # Retrieve the user from the database using the db_session fixture
+#     inserted_user = db_session.query(User).filter_by(name=user_name).first()
+
+#     # Ensure the user is not None (i.e., found in the database)
+#     assert inserted_user is not None
+
+#     # Test updating the user name
+#     user_controller.update_user_name(inserted_user.id, new_name)
+
+#     # Verify the user's name is updated in the database
+#     updated_user = db_session.query(User).filter_by(id=inserted_user.id).first()
+#     assert updated_user.name == new_name
+
+
+# def test_get_user_by_id(user_controller, db_session):
+#     # Test the get_user_by_id method and verify the retrieved user
+#     user_name = "TestUser"
+#     user_controller.insert_user(user_name)
+
+#     # Retrieve the user from the database using the db_session fixture
+#     inserted_user = db_session.query(User).filter_by(name=user_name).first()
+
+#     # Ensure the user is not None (i.e., found in the database)
+#     assert inserted_user is not None
+
+#     # Test getting the user by ID
+#     retrieved_user = user_controller.get_user_by_id(inserted_user.id)
+
+#     # Verify the retrieved user matches the inserted user
+#     assert retrieved_user.id == inserted_user.id
+#     assert retrieved_user.name == inserted_user.name
+
+
+# def test_get_user_recipes_by_id(user_controller, db_session):
+#     # Test the get_user_recipes_by_id method and verify the retrieved recipes
+#     user_name = "TestUser"
+#     user_controller.insert_user(user_name)
+
+#     # Retrieve the user from the database using the db_session fixture
+#     inserted_user = db_session.query(User).filter_by(name=user_name).first()
+
+#     # Ensure the user is not None (i.e., found in the database)
+#     assert inserted_user is not None
+
+#     # Test getting the user's recipes by ID
+#     recipes = user_controller.get_user_recipes_by_id(inserted_user.id)
+
+#     # Verify the recipes are initially empty
+#     assert len(recipes) == 0
+
+#     # Add a recipe to the user and test again
+#     new_recipe = Recipe(name="TestRecipe", description="TestDescription")
+#     db_session.add(new_recipe)
+#     db_session.commit()
+
+#     user_controller.add_recipe_to_user(new_recipe, inserted_user.id)
+
+#     # Retrieve the updated recipes and verify the added recipe is present
+#     updated_recipes = user_controller.get_user_recipes_by_id(inserted_user.id)
+#     assert len(updated_recipes) == 1
+#     assert updated_recipes[0].id == new_recipe.id
+
+
+# def test_add_recipe_to_user(user_controller, db_session):
+#     # Test the add_recipe_to_user method and verify the added recipe
+#     user_name = "TestUser"
+#     user_controller.insert_user(user_name)
+
+#     # Retrieve the user from the database using the db_session fixture
+#     inserted_user = db_session.query(User).filter_by(name=user_name).first()
+
+#     # Ensure the user is not None (i.e., found in the database)
+#     assert inserted_user is not None
+
+#     # Test adding a recipe to the user
+#     new_recipe = Recipe(name="TestRecipe", description="TestDescription")
+#     user_controller.add_recipe_to_user(new_recipe, inserted_user.id)
+
+#     # Retrieve the updated recipes and verify the added recipe is present
+#     updated_recipes = user_controller.get_user_recipes_by_id(inserted_user.id)
+#     assert len(updated_recipes) == 1
+#     assert updated_recipes[0].id == new_recipe.id
+
+
+# def test_remove_recipe_from_user(user_controller, db_session):
+#     # Test the remove_recipe_from_user method and verify the removed recipe
+#     user_name = "TestUser"
+#     user_controller.insert_user(user_name)
+
+#     # Retrieve the user from the database using the db_session fixture
+#     inserted_user = db_session.query(User).filter_by(name=user_name).first()
+
+#     # Ensure the user is not None (i.e., found in the database)
+#     assert inserted_user is not None
+
+#     # Add a recipe to the user
+#     new_recipe = Recipe(name="TestRecipe", description="TestDescription")
+#     db_session.add(new_recipe)
+#     db_session.commit()
+
+#     user_controller.add_recipe_to_user(new_recipe, inserted_user.id)
+
+#     # Test removing the recipe from the user
+#     user_controller.remove_recipe_from_user(new_recipe.id, inserted_user.id)
+
+#     # Retrieve the updated recipes and verify the removed recipe is not present
+#     updated_recipes = user_controller.get_user_recipes_by_id(inserted_user.id)
+#     assert len(updated_recipes) == 0

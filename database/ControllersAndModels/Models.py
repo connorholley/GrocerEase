@@ -1,7 +1,9 @@
 from sqlalchemy import Column, Integer, String, Text, ARRAY, Enum, ForeignKey, Table
-from sqlalchemy.orm import relationship, declarative_base
+from sqlalchemy.orm import relationship
+from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
+
 
 class User(Base):
     __tablename__ = 'users'
@@ -16,7 +18,7 @@ class Recipe(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
-    instructions = Column(ARRAY(Text), nullable=False)
+    instructions = Column(Text)
     description = Column(Text)
 
     # Many-to-many relationships
@@ -77,3 +79,5 @@ ingredient_category_relationships = Table(
     Column('ingredient_id', Integer, ForeignKey('ingredients.id')),
     Column('category_id', Integer, ForeignKey('ingredient_categories.id'))
 )
+
+

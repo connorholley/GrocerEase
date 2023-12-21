@@ -3,6 +3,6 @@
       "db_uri": "postgresql://bert:guest@localhost:5455/production-db"
   },
   "testing": {
-      "db_uri": "postgresql://bert:guest@localhost:5455/testing-db"
+      "db_uri": "sqlite:///:memory:"
   }
 }
