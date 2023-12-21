@@ -14,7 +14,7 @@ class UserController:
     def load_config(self, environment):
         with open('database-config.json', 'r') as config_file:
             config_data = json.load(config_file)
-            return config_data.get(environment, {'db_uri': 'sqlite:///:memory:'})
+            return config_data.get(environment)
     
     def insert_user(self, name):
         try:
