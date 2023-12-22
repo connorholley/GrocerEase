@@ -1,5 +1,5 @@
 import pytest
-from sqlalchemy import create_engine, inspect
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from Models import User, Base, Recipe
 from UserController import UserController
@@ -127,7 +127,6 @@ def test_remove_recipe_from_user(user_controller, db_session):
     db_session.add(recipe)
     db_session.add(user)
     db_session.commit()
-
 
     # when we remove the recipe from the user
     user_controller.remove_recipe_from_user(recipe.id, user.id)

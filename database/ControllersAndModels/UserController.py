@@ -47,8 +47,6 @@ class UserController:
  
         if user and new_name is not None:
             user.name = new_name
-        
-      
         session.commit()
        
 

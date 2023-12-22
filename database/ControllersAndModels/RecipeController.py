@@ -1,77 +1,99 @@
 import json
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from Models import Recipe
+from Models import Recipe, Ingredient
 
 class RecipeController:
-    '''
-    # Example usage:
-        recipe_controller = RecipeController(environment='testing')
 
-    # Insert a recipe
-        recipe_controller.insert_recipe(name='Chocolate Cake', instructions=['Step 1', 'Step 2'], description='Delicious cake recipe')
+    def __init__(self, environment='testing'):
+        self.config = self.load_config(environment)
+        self.engine = create_engine(self.config['db_uri'])
+        Session = sessionmaker(bind=self.engine)
+        self.Session = Session()
 
-    # Get all recipes
-        all_recipes = recipe_controller.get_all_recipes()
-        print("All Recipes:")
-        for recipe in all_recipes:
-            print(f"ID: {recipe.id}, Name: {recipe.name}, Instructions: {recipe.instructions}, Description: {recipe.description}")
+    def load_config(self, environment):
+        with open('database-config.json', 'r') as config_file:
+            config_data = json.load(config_file)
+            return config_data.get(environment)
+    
+    def insert_recipe(self, name, instructions,description):
+        try:
+            recipe = Recipe(name=name, instructions=instructions, description=description)
+            self.Session.add(recipe)
+            self.Session.commit()
+        except Exception as e:
+            self.Session.rollback()
+            print(f"An error occurred: {e}")
 
-    # Get all ingredients for a particular recipe (assuming the recipe ID is 1)
-        ingredients_for_recipe = recipe_controller.get_all_ingredients_for_recipe(recipe_id=1)
-        print(f"Ingredients for Recipe ID 1:")
-        for ingredient in ingredients_for_recipe:
-            print(f"ID: {ingredient.id}, Name: {ingredient.name}")
 
-    # Update a recipe (assuming the ID is 1)
-        recipe_controller.update_recipe(recipe_id=1, description='Updated description')
+    def delete_recipe(self, recipe_id):
+        session = self.Session
+        recipe= session.get(Recipe, recipe_id) 
+        try:
 
-    # Delete a recipe (assuming the ID is 1)
-        recipe_controller.delete_recipe(recipe_id=1)
-    '''
-    # def __init__(self, environment='testing'):
-    #     self.config = self.load_config(environment)
-    #     self.engine = create_engine(self.config['db_uri'])
-    #     Recipe.metadata.create_all(self.engine)
-    #     self.Session = sessionmaker(bind=self.engine)
+            if recipe:
+                session.delete(recipe)
+                session.commit()
+              
+        except Exception as e:
+            session.rollback()  
+            print(f"An error occurred: {e}")
+        
 
-    # def load_config(self, environment):
-    #     with open('database-config.json', 'r') as config_file:
-    #         config_data = json.load(config_file)
-    #         return config_data.get(environment, {})
 
-    # def insert_recipe(self, name, instructions, description=None):
-    #     session = self.Session()
-    #     recipe = Recipe(name=name, instructions=instructions, description=description)
-    #     session.add(recipe)
-    #     session.commit()
-    #     session.close()
+    def update_recipe(self, recipe_id, new_name=None,new_instructions=None, new_description=None):
+        session = self.Session
+        recipe = session.get(Recipe, recipe_id)
+ 
+        if recipe and new_name is not None:
+            recipe.name = new_name
 
-    # def get_all_recipes(self):
-    #     session = self.Session()
-    #     recipes = session.query(Recipe).all()
-    #     session.close()
-    #     return recipes
+        if recipe and new_instructions is not None:
+            recipe.instructions = new_instructions
+        
+        if recipe and new_description is not None:
+            recipe.description = new_description
+        
+        session.commit()
+       
 
-    # def delete_recipe(self, recipe_id):
-    #     session = self.Session()
-    #     recipe = session.query(Recipe).get(recipe_id)
-    #     if recipe:
-    #         session.delete(recipe)
-    #         session.commit()
-    #     session.close()
+    
+    def get_recipe_by_id(self, recipe_id):
+        session = self.Session
+        recipe = session.get(Recipe, recipe_id)
+        return recipe
+       
+    
+    def get_recipe_ingredients_by_id(self, recipe_id: int):
+        session = self.Session
+        recipe= session.get(Recipe, recipe_id)
+        if recipe:
+            return recipe.ingredients
+        return []
+    
+    def add_ingredient_to_recipe(self, ingredient,  recipe_id):
+        session = self.Session
+        recipe = session.get(Recipe, recipe_id)
 
-    # def update_recipe(self, recipe_id, description):
-    #     session = self.Session()
-    #     recipe = session.query(Recipe).get(recipe_id)
-    #     if recipe:
-    #         recipe.description = description
-    #         session.commit()
-    #     session.close()
+        if ingredient is not None and isinstance(ingredient, Ingredient):
+            if recipe.ingredients and (ingredient not in recipe.ingredients) :
+                recipe.ingredients.append(ingredient)
+            else:
+                recipe.ingredients = [ingredient]
+        elif ingredient is not None:
+                
+            raise ValueError("the ingredient parameter must be an instance of Ingredient")
+    
+    def remove_ingredient_from_recipe(self, ingredient_id, recipe_id):
+            session = self.Session
 
-    # def get_all_ingredients_for_recipe(self, recipe_id):
-    #     session = self.Session()
-    #     recipe = session.query(Recipe).get(recipe_id)
-    #     if recipe:
-    #         return recipe.ingredients
-    #     return []
+            recipe = session.query(Recipe).get(recipe_id)
+
+            if recipe:
+                recipe.ingredients = [ingredient for ingredient in recipe.ingredients if ingredient.id != ingredient_id]
+
+            session.commit()
+            
+
+
+
