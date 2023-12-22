@@ -28,8 +28,7 @@ class UserController:
 
     def delete_user(self, user_id):
         session = self.Session
-        user= session.get(User, user_id)
-        print("In user controller "+ user.name)
+        user= session.get(User, user_id) 
         try:
 
             if user:
@@ -37,7 +36,7 @@ class UserController:
                 session.commit()
               
         except Exception as e:
-            session.rollback()  # Rollback the transaction in case of an exception
+            session.rollback()  
             print(f"An error occurred: {e}")
         
 
@@ -45,10 +44,13 @@ class UserController:
     def update_user_name(self, user_id, new_name=None):
         session = self.Session
         user = session.get(User, user_id)
+ 
         if user and new_name is not None:
             user.name = new_name
+        
+      
         session.commit()
-        session.close()
+       
 
     
     def get_user_by_id(self, user_id):
@@ -89,7 +91,7 @@ class UserController:
                 user.recipes = [recipe for recipe in user.recipes if recipe.id != recipe_id]
 
             session.commit()
-            session.close()
+            
 
 
 
