@@ -34,7 +34,7 @@ CREATE TABLE ingredient_category_relationships (
 CREATE TABLE recipes (
     id SERIAL PRIMARY KEY,
     name TEXT,
-    instructions TEXT[],
+    instructions TEXT,
     description TEXT
 );
 
