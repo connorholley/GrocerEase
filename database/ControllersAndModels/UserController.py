@@ -1,20 +1,18 @@
-import json
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from Models import User, Recipe
+from .Models import User, Recipe
+from .ControllerHelperFunctions import load_config
 
 class UserController:
 
     def __init__(self, environment='testing'):
-        self.config = self.load_config(environment)
+        self.config = load_config(environment)
         self.engine = create_engine(self.config['db_uri'])
         Session = sessionmaker(bind=self.engine)
         self.Session = Session()
 
-    def load_config(self, environment):
-        with open('database-config.json', 'r') as config_file:
-            config_data = json.load(config_file)
-            return config_data.get(environment)
+
     
     def insert_user(self, name):
         try:
