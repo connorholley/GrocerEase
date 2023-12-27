@@ -1,14 +1,17 @@
-#!/usr/bin/env python3
+from flask import Flask, jsonify
+from flask_cors import CORS
 
-from quart import Quart
+from database.ControllersAndModels.UserController import UserController
 
-app = Quart(__name__)
+app = Flask(__name__)
+CORS(app, origins="http://localhost:5000")  
 
 @app.route('/')
-async def check_health():
-    return {
-        "status": "healthy"
-    }
+def hello_world():
+    user_controller=UserController()
+    recipes=user_controller.get_user_recipes_by_id(1)
+    print(recipes)
+    return jsonify(message="Hello, Flask!")
 
-if __name__ == "__main__":
-    app.run()
+if __name__ == '__main__':
+    app.run(debug=True)

@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 
 import FilterDropdown from './FilterDropdown';
 import RecipeResult from './RecipeResult';
+import axios from 'axios';
 const styles = StyleSheet.create({
   container: {
   
@@ -60,11 +61,40 @@ const RecipeResults: React.FC = () => {
       recipeDescription:"Damn that is a tasty Burger!"
     },
   ];
+  const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    // Was having issues with axios localhost requests cause the emulator uses a diff localhost
+    // prob a better way of doing this
+    // https://stackoverflow.com/questions/42189301/axios-in-react-native-not-calling-server-in-localhost
+
+    axios.get('http://127.0.0.1:5000')
+      .then(response => {
+        console.log('Response:', response);
+        setMessage(response.data.message);
+      })
+      .catch(error => {
+        console.error('Axios Error:', error);
+  
+        if (error.response) {
+          console.error('Response Data:', error.response.data);
+          console.error('Response Status:', error.response.status);
+          console.error('Response Headers:', error.response.headers);
+        } else if (error.request) {
+          console.error('No Response Received:', error.request);
+        } else {
+          console.error('Request Setup Error:', error.message);
+        }
+      });
+  }, []);
+  
+  
 
   return (
     
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>
+        {message}
         <FilterDropdown
           options={filterOptions}
           selectedValue={selectedFilter}
