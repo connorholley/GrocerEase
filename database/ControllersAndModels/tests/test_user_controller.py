@@ -36,7 +36,7 @@ def test_insert_user(user_controller, db_session):
     assert db_session.query(User).count() == 0
 
     # When we insert the user
-    user_controller.insert_user(user_name)
+    user_controller.create(user_name)
 
     # Then it exists in the db
     inserted_user = db_session.query(User).filter_by(name=user_name).first()
@@ -51,7 +51,7 @@ def test_delete_user(user_controller, db_session):
     db_session.commit()
 
     # When we delete the user
-    user_controller.delete_user(user.id)
+    user_controller.delete(user.id)
 
     # Then it is removed from the database
     deleted_user = db_session.query(User).filter_by(name=user.name).first()
@@ -65,7 +65,7 @@ def test_update_user_name(user_controller, db_session):
     db_session.commit()
 
     # When we update the users name
-    user_controller.update_user_name(user.id, "UpdatedUser")
+    user_controller.update(user.id, {"name":"UpdatedUser"})
 
     # Then the user with the id has the new name
     updated_user = db_session.query(User).filter_by(id=user.id).first()
@@ -79,7 +79,7 @@ def test_get_user_by_id(user_controller, db_session):
     db_session.commit()
 
     # when we call the get user by id function
-    retrieved_user = user_controller.get_user_by_id(user.id)
+    retrieved_user = user_controller.get_by_id(user.id)
 
     # Then it gets the correct user
     assert retrieved_user.id == user.id

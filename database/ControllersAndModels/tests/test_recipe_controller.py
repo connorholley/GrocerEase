@@ -5,6 +5,7 @@ from ControllersAndModels.Models import Base, Ingredient, Recipe
 from ControllersAndModels.RecipeController import RecipeController
 
 
+
 TestBase = Base
 engine = create_engine('sqlite:///:memory:')
 TestBase.metadata.bind = engine
@@ -30,13 +31,13 @@ def recipe_controller(db_session):
     return controller
 
 
-def test_insert_recipe(recipe_controller, db_session):
+def test_create_recipe(recipe_controller, db_session):
     # Given we have a test recipe and an empty database
     recipe_name = "TestRecipe"
     assert db_session.query(Recipe).count() == 0
 
     # When we insert the recipe
-    recipe_controller.insert_recipe(recipe_name, "TestInstructions", "TestDescription")
+    recipe_controller.create(name=recipe_name, instructions="TestInstructions", description="TestDescription")
 
     # Then it exists in the db
     inserted_recipe = db_session.query(Recipe).filter_by(name=recipe_name).first()
@@ -51,7 +52,7 @@ def test_delete_recipe(recipe_controller, db_session):
     db_session.commit()
 
     # When we delete the recipe
-    recipe_controller.delete_recipe(recipe.id)
+    recipe_controller.delete(recipe.id)
 
     # Then it is removed from the database
     deleted_recipe = db_session.query(Recipe).filter_by(name=recipe.name).first()
@@ -65,7 +66,7 @@ def test_update_recipe_name(recipe_controller, db_session):
     db_session.commit()
 
     # When we update the recipe with a new name
-    recipe_controller.update_recipe(recipe.id, new_name="UpdatedRecipe")
+    recipe_controller.update(recipe.id, {"name":"UpdatedRecipe"})
 
     # Then the recipe with the id has the new name
     updated_recipe = db_session.query(Recipe).filter_by(id=recipe.id).first()
@@ -78,7 +79,7 @@ def test_update_recipe_instructions(recipe_controller, db_session):
     db_session.commit()
 
     # When we update the recipe with new instructions
-    recipe_controller.update_recipe(recipe.id,new_instructions="NewInstructions")
+    recipe_controller.update(recipe.id,{"instructions":"NewInstructions"})
 
     # Then the recipe with the id has the new instructions
     updated_recipe = db_session.query(Recipe).filter_by(id=recipe.id).first()
@@ -91,7 +92,7 @@ def test_update_recipe_description(recipe_controller, db_session):
     db_session.commit()
 
     # When we update the recipe with a new description
-    recipe_controller.update_recipe(recipe.id,new_description="NewDescription")
+    recipe_controller.update(recipe.id,{"description":"NewDescription"})
 
     # Then the recipe with the id has the new description
     updated_recipe = db_session.query(Recipe).filter_by(id=recipe.id).first()
@@ -105,7 +106,7 @@ def test_get_recipe_by_id(recipe_controller, db_session):
     db_session.commit()
 
     # when we call the get recipe by id function
-    retrieved_recipe = recipe_controller.get_recipe_by_id(recipe.id)
+    retrieved_recipe = recipe_controller.get_by_id(recipe.id)
 
     # Then it gets the correct recipe
     assert retrieved_recipe.id == recipe.id
