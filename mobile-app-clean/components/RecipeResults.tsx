@@ -4,6 +4,8 @@ import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import FilterDropdown from './FilterDropdown';
 import RecipeResult from './RecipeResult';
 import axios from 'axios';
+
+
 const styles = StyleSheet.create({
   container: {
   
@@ -61,7 +63,7 @@ const RecipeResults: React.FC = () => {
       recipeDescription:"Damn that is a tasty Burger!"
     },
   ];
-  const [message, setMessage] = useState('');
+  const [recipes, setRecipes] = useState('');
 
   useEffect(() => {
     // Was having issues with axios localhost requests cause the emulator uses a diff localhost
@@ -71,7 +73,8 @@ const RecipeResults: React.FC = () => {
     axios.get('http://127.0.0.1:5000')
       .then(response => {
         console.log('Response:', response);
-        setMessage(response.data.message);
+        setRecipes(response.data.message);
+        
       })
       .catch(error => {
         console.error('Axios Error:', error);
@@ -94,7 +97,7 @@ const RecipeResults: React.FC = () => {
     
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>
-        {message}
+        {recipes}
         <FilterDropdown
           options={filterOptions}
           selectedValue={selectedFilter}
