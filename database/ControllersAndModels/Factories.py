@@ -24,11 +24,17 @@ class RecipeFactory(BaseFactory):
     description = factory.Faker('text')
 
 
+class IngredientFactory(BaseFactory):
+    class Meta:
+        model = Ingredient
+
+    name = factory.Faker('word')
+
 class PantryItemFactory(BaseFactory):
     class Meta:
         model = PantryItem
 
-    ingredient_id = factory.SubFactory('IngredientFactory')
+    ingredient_id = factory.SubFactory(IngredientFactory)
     amount = factory.Faker('random_int')
     unit = factory.Faker('random_element', elements=['gram', 'milliliter'])
 
@@ -39,12 +45,6 @@ class IngredientCategoryFactory(BaseFactory):
 
     name = factory.Faker('word')
 
-
-class IngredientFactory(BaseFactory):
-    class Meta:
-        model = Ingredient
-
-    name = factory.Faker('word')
 
 
 
