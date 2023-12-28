@@ -1,4 +1,5 @@
 import factory
+from factory import LazyAttribute
 from Models import User, Recipe, PantryItem, IngredientCategory, Ingredient
 
 
@@ -19,9 +20,9 @@ class RecipeFactory(BaseFactory):
     class Meta:
         model = Recipe
 
-    name = factory.Faker('word')
-    instructions = factory.Faker('text')
-    description = factory.Faker('text')
+    name = factory.Faker('name')
+    instructions = factory.Faker('paragraph')
+    description = factory.Faker('paragraph')
 
 
 class IngredientFactory(BaseFactory):
@@ -33,10 +34,10 @@ class IngredientFactory(BaseFactory):
 class PantryItemFactory(BaseFactory):
     class Meta:
         model = PantryItem
-
-    ingredient_id = factory.SubFactory(IngredientFactory)
+    ingredient_id= IngredientFactory.create().id
     amount = factory.Faker('random_int')
     unit = factory.Faker('random_element', elements=['gram', 'milliliter'])
+    
 
 
 class IngredientCategoryFactory(BaseFactory):
