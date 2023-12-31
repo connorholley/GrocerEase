@@ -41,8 +41,13 @@ CREATE TABLE recipes (
 CREATE TABLE recipe_ingredient_relationships (
     recipe_id INT,
     ingredient_id INT,
-    PRIMARY KEY (recipe_id, ingredient_id)
+    amount FLOAT,
+    unit VARCHAR(255),  
+    PRIMARY KEY (recipe_id, ingredient_id),
+    FOREIGN KEY (recipe_id) REFERENCES recipes(id),
+    FOREIGN KEY (ingredient_id) REFERENCES ingredients(id)
 );
+
 
 CREATE TABLE user_recipe_relationships (
     user_id INT,

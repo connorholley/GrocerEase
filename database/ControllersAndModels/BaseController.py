@@ -3,7 +3,7 @@ from sqlalchemy.orm import sessionmaker
 from .ControllerHelperFunctions import load_config
 
 class BaseController:
-    def __init__(self, model_class, environment='testing'):
+    def __init__(self, model_class, environment):
         self.config = load_config(environment)
         self.engine = create_engine(self.config['db_uri'])
         Session = sessionmaker(bind=self.engine)

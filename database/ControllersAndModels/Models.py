@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text, Enum, ForeignKey, Table
+from sqlalchemy import Column, Integer, String, Text, Enum, ForeignKey, Table, Float
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -66,18 +66,23 @@ user_recipe_relationships = Table(
     Column('recipe_id', Integer, ForeignKey('recipes.id'), primary_key=True)
 )
 
+
+
 recipe_ingredient_relationships = Table(
     'recipe_ingredient_relationships',
     Base.metadata,
-    Column('recipe_id', Integer, ForeignKey('recipes.id')),
-    Column('ingredient_id', Integer, ForeignKey('ingredients.id'))
+    Column('recipe_id', Integer, ForeignKey('recipes.id'), primary_key=True),
+    Column('ingredient_id', Integer, ForeignKey('ingredients.id'), primary_key=True),
+    Column('amount', Float),  # Assuming amount is a floating-point number
+    Column('unit', String),   # Assuming unit is a string, you can adjust the type as needed
 )
 
 ingredient_category_relationships = Table(
     'ingredient_category_relationships',
     Base.metadata,
-    Column('ingredient_id', Integer, ForeignKey('ingredients.id')),
-    Column('category_id', Integer, ForeignKey('ingredient_categories.id'))
+    Column('ingredient_id', Integer, ForeignKey('ingredients.id'), primary_key=True),
+    Column('ingredient_category_id', Integer, ForeignKey('ingredient_categories.id'), primary_key=True)
 )
+
 
 

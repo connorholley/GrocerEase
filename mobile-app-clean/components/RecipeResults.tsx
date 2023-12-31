@@ -43,26 +43,27 @@ const RecipeResults: React.FC = () => {
     // add how many we are cooking for
   };
 
-  const recipeData = [
-    {
-      recipeName: 'Cheesy Nachos',
-      imagePath: require('../assets/images/nachos-example.jpeg'),
-      ingredients: [
-        { name: 'cheese', amount: '100', unit: 'g' },
-        { name: 'chips', amount: '500', unit: 'g' },
-      ],
-      recipeDescription:"Delicious chips covered in cheese. Baked to perfection."
-    },
-    {
-      recipeName: 'Tasty Burger',
-      imagePath: require('../assets/images/burger.jpeg'),
-      ingredients: [
-        { name: 'cheese', amount: '100', unit: 'g' },
-        { name: 'ground beef', amount: '1', unit: 'kg' },
-      ],
-      recipeDescription:"Damn that is a tasty Burger!"
-    },
-  ];
+  // const recipeData = [
+  //   {
+  //     recipeName: 'Cheesy Nachos',
+  //     imagePath: require('../assets/images/nachos-example.jpeg'),
+  //     ingredients: [
+  //       { name: 'cheese', amount: '100', unit: 'g' },
+  //       { name: 'chips', amount: '500', unit: 'g' },
+  //     ],
+  //     recipeDescription:"Delicious chips covered in cheese. Baked to perfection."
+  //   },
+  //   {
+  //     recipeName: 'Tasty Burger',
+  //     imagePath: require('../assets/images/burger.jpeg'),
+  //     ingredients: [
+  //       { name: 'cheese', amount: '100', unit: 'g' },
+  //       { name: 'ground beef', amount: '1', unit: 'kg' },
+  //     ],
+  //     recipeDescription:"Damn that is a tasty Burger!"
+  //   },
+  // ];
+  const [recipeData,setRecipeData]= useState([]);
   const [recipes, setRecipes] = useState('');
 
   useEffect(() => {
@@ -72,8 +73,8 @@ const RecipeResults: React.FC = () => {
 
     axios.get('http://127.0.0.1:5000')
       .then(response => {
-        console.log('Response:', response);
-        setRecipes(response.data.message);
+       
+        setRecipeData(response.data.recipe_array);
         
       })
       .catch(error => {
@@ -97,7 +98,7 @@ const RecipeResults: React.FC = () => {
     
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>
-        {recipes}
+        {/* {recipes} */}
         <FilterDropdown
           options={filterOptions}
           selectedValue={selectedFilter}
