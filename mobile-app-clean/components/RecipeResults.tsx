@@ -43,26 +43,7 @@ const RecipeResults: React.FC = () => {
     // add how many we are cooking for
   };
 
-  // const recipeData = [
-  //   {
-  //     recipeName: 'Cheesy Nachos',
-  //     imagePath: require('../assets/images/nachos-example.jpeg'),
-  //     ingredients: [
-  //       { name: 'cheese', amount: '100', unit: 'g' },
-  //       { name: 'chips', amount: '500', unit: 'g' },
-  //     ],
-  //     recipeDescription:"Delicious chips covered in cheese. Baked to perfection."
-  //   },
-  //   {
-  //     recipeName: 'Tasty Burger',
-  //     imagePath: require('../assets/images/burger.jpeg'),
-  //     ingredients: [
-  //       { name: 'cheese', amount: '100', unit: 'g' },
-  //       { name: 'ground beef', amount: '1', unit: 'kg' },
-  //     ],
-  //     recipeDescription:"Damn that is a tasty Burger!"
-  //   },
-  // ];
+
   const [recipeData,setRecipeData]= useState([]);
   const [recipes, setRecipes] = useState('');
 
@@ -112,7 +93,7 @@ const RecipeResults: React.FC = () => {
           
             recipeName={recipe.recipeName}
             ingredients={recipe.ingredients}
-            imagePath={recipe.imagePath}
+            imagePath={require('../assets/images/nachos-example.jpeg')}
             recipeDescription={recipe.recipeDescription}
           />
           <View style={styles.separator} />

@@ -1,5 +1,5 @@
 from .BaseController import BaseController
-from .Models import Ingredient, Recipe
+from .Models import Ingredient, Recipe, RecipeIngredientRelationship
 
 class RecipeController(BaseController):
 
@@ -7,9 +7,23 @@ class RecipeController(BaseController):
         super().__init__(model_class=Recipe, environment=environment)
 
 
-    def get_recipe_ingredients_by_id(self, recipe_id: int):
-        recipe = self.get_by_id(recipe_id)
-        return recipe.ingredients if recipe else []
+   
+    
+    def get_ingredients_for_recipe(self, recipe_id: int):
+
+        # Join the Ingredient model to get the associated ingredients
+        relationships = (
+            self.Session.query(RecipeIngredientRelationship, Ingredient)
+            .join(Ingredient)
+            .filter(RecipeIngredientRelationship.recipe_id == recipe_id)
+            .all()
+        )
+
+        return relationships
+      
+
+    
+
 
     def add_ingredient_to_recipe(self, ingredient, recipe_id):
         recipe = self.get_by_id(recipe_id)

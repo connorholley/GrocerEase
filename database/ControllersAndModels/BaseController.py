@@ -45,3 +45,8 @@ class BaseController:
     def get_by_id(self, instance_id):
         session = self.Session
         return session.get(self.model_class, instance_id)
+    
+    def get_all(self):
+        session = self.Session
+        return session.query(self.model_class).all()
+

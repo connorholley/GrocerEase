@@ -25,14 +25,17 @@ class Recipe(Base):
     ingredients = relationship('Ingredient', secondary='recipe_ingredient_relationships', back_populates='recipes')
     users = relationship(User, secondary='user_recipe_relationships', back_populates='recipes')
 
+    
+
 
 class PantryItem(Base):
     __tablename__ = 'pantry_items'
 
     id = Column(Integer, primary_key=True)
     ingredient_id = Column(Integer, ForeignKey('ingredients.id'), nullable=False)
-    amount = Column(Integer, nullable=False)
+    amount = Column(Float, nullable=False)  
     unit = Column(Enum('gram', 'milliliter', name='unit_type'), nullable=False)
+
 
 
 class IngredientCategory(Base):
@@ -57,6 +60,15 @@ class Ingredient(Base):
     # Ingredient and recipe many-to-many relationship
     recipes = relationship(Recipe, secondary='recipe_ingredient_relationships', back_populates='ingredients')
 
+class RecipeIngredientRelationship(Base):
+    __tablename__ = 'recipe_ingredient_relationships'
+
+    recipe_id = Column(Integer, ForeignKey('recipes.id'), primary_key=True)
+    ingredient_id = Column(Integer, ForeignKey('ingredients.id'), primary_key=True)
+    amount = Column(Float)
+    unit = Column(String(255))
+
+
 
 # Relationship tables
 user_recipe_relationships = Table(
@@ -68,14 +80,15 @@ user_recipe_relationships = Table(
 
 
 
-recipe_ingredient_relationships = Table(
-    'recipe_ingredient_relationships',
-    Base.metadata,
-    Column('recipe_id', Integer, ForeignKey('recipes.id'), primary_key=True),
-    Column('ingredient_id', Integer, ForeignKey('ingredients.id'), primary_key=True),
-    Column('amount', Float),  # Assuming amount is a floating-point number
-    Column('unit', String),   # Assuming unit is a string, you can adjust the type as needed
-)
+
+# recipe_ingredient_relationships = Table(
+#     'recipe_ingredient_relationships',
+#     Base.metadata,
+#     Column('recipe_id', Integer, ForeignKey('recipes.id'), primary_key=True),
+#     Column('ingredient_id', Integer, ForeignKey('ingredients.id'), primary_key=True),
+#     Column('amount', Float),  # Assuming amount is a floating-point number
+#     Column('unit', String),   # Assuming unit is a string, you can adjust the type as needed
+# )
 
 ingredient_category_relationships = Table(
     'ingredient_category_relationships',
