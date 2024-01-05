@@ -5,10 +5,22 @@ import FilterDropdown from './FilterDropdown';
 import RecipeResult from './RecipeResult';
 import axios from 'axios';
 
+interface Ingredient {
+  name: string;
+  amount: string;
+  unit: string;
+}
+
+interface Recipe {
+  recipeName: string;
+  ingredients: Ingredient[];
+  recipeDescription: string;
+  
+}
+
 
 const styles = StyleSheet.create({
   container: {
-  
     paddingTop: 40,
     paddingHorizontal: 16,
     backgroundColor: '#2455C2',
@@ -24,7 +36,6 @@ const styles = StyleSheet.create({
     width: '100%',
     backgroundColor: '#ccc',
   },
- 
 });
 
 const RecipeResults: React.FC = () => {
@@ -38,48 +49,25 @@ const RecipeResults: React.FC = () => {
 
   const handleFilterChange = (value: string) => {
     setSelectedFilter(value);
-    // This will influence which SQL select we undergo
-    // For example, favorites would randomly select a recipe marked as a favorite
-    // add how many we are cooking for
   };
 
-
-  const [recipeData,setRecipeData]= useState([]);
-  const [recipes, setRecipes] = useState('');
+  const [recipeData, setRecipeData] = useState<Recipe[]>([]);
 
   useEffect(() => {
-    // Was having issues with axios localhost requests cause the emulator uses a diff localhost
-    // prob a better way of doing this
-    // https://stackoverflow.com/questions/42189301/axios-in-react-native-not-calling-server-in-localhost
-
-    axios.get('http://127.0.0.1:5000')
+    axios
+      .get('http://127.0.0.1:5000')
       .then(response => {
-       
         setRecipeData(response.data.recipe_array);
-        
       })
       .catch(error => {
         console.error('Axios Error:', error);
-  
-        if (error.response) {
-          console.error('Response Data:', error.response.data);
-          console.error('Response Status:', error.response.status);
-          console.error('Response Headers:', error.response.headers);
-        } else if (error.request) {
-          console.error('No Response Received:', error.request);
-        } else {
-          console.error('Request Setup Error:', error.message);
-        }
+        // Handle other error cases
       });
   }, []);
-  
-  
 
   return (
-    
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>
-        {/* {recipes} */}
         <FilterDropdown
           options={filterOptions}
           selectedValue={selectedFilter}
@@ -88,9 +76,8 @@ const RecipeResults: React.FC = () => {
       </Text>
       <View style={styles.separator} />
       {recipeData.map((recipe, index) => (
-        <View key={index} >
+        <View key={index}>
           <RecipeResult
-          
             recipeName={recipe.recipeName}
             ingredients={recipe.ingredients}
             imagePath={require('../assets/images/nachos-example.jpeg')}

@@ -11,7 +11,7 @@ class RecipeController(BaseController):
     
     def get_ingredients_for_recipe(self, recipe_id: int):
 
-        # Join the Ingredient model to get the associated ingredients
+        
         relationships = (
             self.Session.query(RecipeIngredientRelationship, Ingredient)
             .join(Ingredient)
