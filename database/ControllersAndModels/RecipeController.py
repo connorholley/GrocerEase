@@ -1,4 +1,6 @@
 from .BaseController import BaseController
+from sqlalchemy.orm import joinedload
+
 from .Models import Ingredient, Recipe, RecipeIngredientRelationship
 
 class RecipeController(BaseController):
@@ -7,11 +9,23 @@ class RecipeController(BaseController):
         super().__init__(model_class=Recipe, environment=environment)
 
 
+    
    
     
-    def get_ingredients_for_recipe(self, recipe_id: int):
+    # def get_ingredients_for_recipe(self, recipe_id: int):
 
         
+    #     relationships = (
+    #         self.Session.query(RecipeIngredientRelationship, Ingredient)
+    #         .join(Ingredient)
+    #         .filter(RecipeIngredientRelationship.recipe_id == recipe_id)
+    #         .all()
+    #     )
+
+    #     return relationships
+      
+
+    def get_ingredients_for_recipe(self, recipe_id: int):
         relationships = (
             self.Session.query(RecipeIngredientRelationship, Ingredient)
             .join(Ingredient)
@@ -19,9 +33,19 @@ class RecipeController(BaseController):
             .all()
         )
 
-        return relationships
-      
+        return [ingredient for _, ingredient in relationships]
 
+    def get_recipes_with_ingredients(self, ingredient_names: list):
+        recipes_with_ingredients = (
+            self.Session.query(Recipe)
+            .join(RecipeIngredientRelationship)
+            .join(Ingredient)
+            .filter(Ingredient.name.in_(ingredient_names))
+            .options(joinedload(Recipe.ingredients))
+            .all()
+        )
+
+        return recipes_with_ingredients
     
 
 

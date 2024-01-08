@@ -46,7 +46,14 @@ class BaseController:
         session = self.Session
         return session.get(self.model_class, instance_id)
     
-    def get_all(self):
+    def get_all(self, **filters):
         session = self.Session
-        return session.query(self.model_class).all()
+        query = session.query(self.model_class)
+
+        # Apply filters to the query
+        for attr, value in filters.items():
+            query = query.filter(getattr(self.model_class, attr) == value)
+
+        # Retrieve all results
+        return query.all()
 
