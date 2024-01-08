@@ -12,25 +12,27 @@ CORS(app, origins="http://localhost:5000")
 @app.route('/')
 def hello_world():
     recipe_controller = RecipeController(environment="production")
-    ingredients_for_recipe = recipe_controller.get_ingredients_for_recipe(recipe_id=1)
-
-    # Extract ingredient names from the result
-    ingredient_names = [ingredient.name for ingredient in ingredients_for_recipe]
+   
+    
+    
 
     # Get recipes that contain these ingredients
-    recipe_query = recipe_controller.get_recipes_with_ingredients(['false'])
+    list_of_ingredients_in_pantry= ["true", "false"]
+
+    recipe_query = recipe_controller.get_recipes_with_ingredients(list_of_ingredients_in_pantry)
 
     recipe_array = []
 
     for recipe in recipe_query:
         recipe_ingredients = recipe_controller.get_ingredients_for_recipe(recipe.id)
+        print(recipe_ingredients)
         ingredients_list = []
 
         for ingredient in recipe_ingredients:
             ingredient_data = {
-                'name': ingredient.name,
-                'amount': 100,  # Adjust this if there's an attribute in Ingredient for amount
-                'unit': 'g'     # Adjust this if there's an attribute in Ingredient for unit
+                'name': ingredient['name'],
+                'amount': ingredient['amount'],  # Include amount from the relationship
+                'unit': ingredient['unit']       # Include unit from the relationship
             }
             ingredients_list.append(ingredient_data)
 

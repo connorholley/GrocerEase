@@ -33,7 +33,16 @@ class RecipeController(BaseController):
             .all()
         )
 
-        return [ingredient for _, ingredient in relationships]
+        return [
+            {
+                'ingredient_id': ingredient.id,
+                'name': ingredient.name,
+                'amount': relationship.amount,  # Add this line to include amount
+                'unit': relationship.unit      # Add this line to include unit
+            }
+            for relationship, ingredient in relationships
+        ]
+
 
     def get_recipes_with_ingredients(self, ingredient_names: list):
         recipes_with_ingredients = (

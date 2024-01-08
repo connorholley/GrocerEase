@@ -20,7 +20,7 @@ class Recipe(Base):
     name = Column(String, nullable=False)
     instructions = Column(Text)
     description = Column(Text)
-
+    
     # Many-to-many relationships
     ingredients = relationship('Ingredient', secondary='recipe_ingredient_relationships', back_populates='recipes')
     users = relationship(User, secondary='user_recipe_relationships', back_populates='recipes')
